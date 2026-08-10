@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Mi Generador IA</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .version {
+      opacity: 0.6;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 18px;
+      border-radius: 10px;
+      border: 1px solid #444;
+      background: #1d1d1d;
+      color: white;
+      font-size: 16px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #generateButton {
+      background: #fff;
+      color: #111;
+    }
+
+    .secondary {
+      background: #292929;
+      color: white;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      background: #1c1c1c;
+      border-radius: 10px;
+      word-break: break-word;
+    }
+
+    .result {
+      margin-top: 25px;
+      text-align: center;
+    }
+
+    .result img {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .loading {
+      display: none;
+      margin: 20px 0;
+    }
+
+    .download {
+      display: none;
+      background: #fff;
+      color: #111;
+      text-decoration: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    .error {
+      color: #ff6b6b;
+    }
+
+    .success {
+      color: #7cff9b;
+    }
+
+    @media (max-width: 600px) {
+
+      body {
+        padding: 15px;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+  <h1>✦ Mi Generador IA</h1>
+
+  <div class="version">
+    V5 · Hugging Face
+  </div>
+
+
+  <!-- PROMPT -->
+
+  <label for="prompt">
+    Prompt
+  </label>
+
+  <textarea
+    id="prompt"
+    placeholder="Describe la imagen que quieres generar..."
+  ></textarea>
+
+
+  <!-- PROMPT NEGATIVO -->
+
+  <label for="negativePrompt">
+    Prompt negativo
+  </label>
+
+  <textarea
+    id="negativePrompt"
+    placeholder="Elementos que no quieres en la imagen..."
+  ></textarea>
+
+
+  <!-- OPCIONES -->
+
+  <div class="row">
+
+    <div>
+
+      <label for="ratio">
+        Formato
+      </label>
+
+      <select id="ratio">
+
+        <option value="1:1">
+          1:1
+        </option>
+
+        <option value="9:16">
+          9:16
+        </option>
+
+        <option value="16:9">
+          16:9
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div>
+
+      <label for="style">
+        Estilo
+      </label>
+
+      <select id="style">
+
+        <option value="Fotorealista">
+          Fotorealista
+        </option>
+
+        <option value="Cinematográfico">
+          Cinematográfico
+        </option>
+
+        <option value="3D">
+          3D
+        </option>
+
+        <option value="Anime">
+          Anime
+        </option>
+
+        <option value="Ilustración">
+          Ilustración
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <!-- BOTÓN GENERAR -->
+
+  <button
+    id="generateButton"
+    type="button"
+  >
+
+    🚀 Generar imagen
+
+  </button>
+
+
+  <!-- GUARDAR PROMPT -->
+
+  <button
+    id="saveButton"
+    class="secondary"
+    type="button"
+  >
+
+    💾 Guardar prompt
+
+  </button>
+
+
+  <!-- ESTADO -->
+
+  <div
+    id="status"
+    class="status"
+  >
+
+    Estado: listo.
+
+  </div>
+
+
+  <!-- LOADING -->
+
+  <div
+    id="loading"
+    class="loading"
+  >
+
+    ⏳ Generando imagen...
+
+  </div>
+
+
+  <!-- RESULTADO -->
+
+  <div class="result">
+
+    <h2>
+      Generador
+    </h2>
+
+    <img
+      id="generatedImage"
+      alt="Imagen generada por IA"
+    >
+
+    <a
+      id="downloadButton"
+      class="download"
+      download="imagen-generada.png"
+    >
+
+      ⬇️ Descargar imagen
+
+    </a>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  // ==========================================
+  // URL DE TU API
+  // ==========================================
+
+  const API_URL =
+    "https://vogvuahtbrwuebfvehzf.supabase.co/functions/v1/dynamic-task";
+
+
+  // ==========================================
+  // ELEMENTOS
+  // ==========================================
+
+  const promptInput =
+    document.getElementById("prompt");
+
+  const negativePromptInput =
+    document.getElementById("negativePrompt");
+
+  const ratioInput =
+    document.getElementById("ratio");
+
+  const styleInput =
+    document.getElementById("style");
+
+  const generateButton =
+    document.getElementById("generateButton");
+
+  const saveButton =
+    document.getElementById("saveButton");
+
+  const status =
+    document.getElementById("status");
+
+  const loading =
+    document.getElementById("loading");
+
+  const generatedImage =
+    document.getElementById("generatedImage");
+
+  const downloadButton =
+    document.getElementById("downloadButton");
+
+
+  // ==========================================
+  // GENERAR IMAGEN
+  // ==========================================
+
+  generateButton.addEventListener(
+    "click",
+    generateImage
+  );
+
+
+  async function generateImage() {
+
+    const prompt =
+      promptInput.value.trim();
+
+    const negativePrompt =
+      negativePromptInput.value.trim();
+
+    const aspectRatio =
+      ratioInput.value;
+
+    const style =
+      styleInput.value;
+
+
+    // ========================================
+    // VALIDAR PROMPT
+    // ========================================
+
+    if (!prompt) {
+
+      status.innerHTML =
+        "⚠️ Escribe un prompt antes de generar.";
+
+      status.className =
+        "status error";
+
+      return;
+
+    }
+
+
+    // ========================================
+    // PREPARAR INTERFAZ
+    // ========================================
+
+    generateButton.disabled =
+      true;
+
+    loading.style.display =
+      "block";
+
+    generatedImage.style.display =
+      "none";
+
+    downloadButton.style.display =
+      "none";
+
+
+    status.innerHTML =
+      "⏳ Enviando solicitud a tu API...";
+
+    status.className =
+      "status";
+
+
+    try {
+
+      // ======================================
+      // LLAMADA A TU API
+      // ======================================
+
+      const response =
+        await fetch(
+          API_URL,
+          {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+
+              prompt:
+                prompt,
+
+              negative_prompt:
+                negativePrompt,
+
+              aspect_ratio:
+                aspectRatio,
+
+              style:
+                style
+
+            })
+
+          }
+        );
+
+
+      // ======================================
+      // LEER RESPUESTA
+      // ======================================
+
+      const data =
+        await response.json();
+
+
+      // ======================================
+      // ERROR HTTP
+      // ======================================
+
+      if (!response.ok) {
+
+        throw new Error(
+
+          data.error ||
+          data.details ||
+          `HTTP ${response.status}`
+
+        );
+
+      }
+
+
+      // ======================================
+      // ERROR DE API
+      // ======================================
+
+      if (!data.success) {
+
+        throw new Error(
+
+          data.error ||
+          "La API no pudo generar la imagen."
+
+        );
+
+      }
+
+
+      // ======================================
+      // COMPROBAR IMAGEN
+      // ======================================
+
+      if (!data.image) {
+
+        throw new Error(
+          "La API respondió correctamente, pero no devolvió una imagen."
+        );
+
+      }
+
+
+      // ======================================
+      // MOSTRAR IMAGEN
+      // ======================================
+
+      generatedImage.src =
+        data.image;
+
+      generatedImage.style.display =
+        "block";
+
+
+      // ======================================
+      // BOTÓN DESCARGAR
+      // ======================================
+
+      downloadButton.href =
+        data.image;
+
+      downloadButton.style.display =
+        "block";
+
+
+      // ======================================
+      // ESTADO
+      // ======================================
+
+      status.innerHTML =
+        "✅ ¡Imagen generada correctamente!";
+
+      status.className =
+        "status success";
+
+
+    } catch (error) {
+
+      console.error(
+        "ERROR:",
+        error
+      );
+
+
+      status.innerHTML =
+        "❌ Error: " +
+        error.message;
+
+      status.className =
+        "status error";
+
+    } finally {
+
+      generateButton.disabled =
+        false;
+
+      loading.style.display =
+        "none";
+
+    }
+
+  }
+
+
+  // ==========================================
+  // GUARDAR PROMPT
+  // ==========================================
+
+  saveButton.addEventListener(
+    "click",
+    () => {
+
+      const prompt =
+        promptInput.value.trim();
+
+
+      if (!prompt) {
+
+        status.innerHTML =
+          "⚠️ No hay ningún prompt para guardar.";
+
+        status.className =
+          "status error";
+
+        return;
+
+      }
+
+
+      localStorage.setItem(
+        "ultimo_prompt",
+        prompt
+      );
+
+
+      status.innerHTML =
+        "💾 Prompt guardado en este dispositivo.";
+
+      status.className =
+        "status success";
+
+    }
+  );
+
+
+  // ==========================================
+  // RECUPERAR PROMPT GUARDADO
+  // ==========================================
+
+  const savedPrompt =
+    localStorage.getItem(
+      "ultimo_prompt"
+    );
+
+
+  if (savedPrompt) {
+
+    promptInput.value =
+      savedPrompt;
+
+  }
+
+</script>
+
+</body>
+
+</html>
